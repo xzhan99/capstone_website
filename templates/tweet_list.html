@@ -1,0 +1,41 @@
+{% extends 'left_bar.html' %}
+{% block contents %}
+    <section class="resume-section p-3 p-lg-5 d-flex align-items-baseline" id="about">
+        <div class="w-100">
+            <div style="margin-top: 10px">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Illness</th>
+                        <th>{{ category }}</th>
+                        <th>Date Range</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{ illness }}</td>
+                        <td>{{ name }}</td>
+                        <td>From: {{ s }} To: {{ e }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table id="s_table" class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Text</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for t in list %}
+                        <tr>
+                            <td>{{ t.time }}</td>
+                            <td>{{ t.text }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}
