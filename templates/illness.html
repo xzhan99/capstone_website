@@ -23,16 +23,6 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for node in nodes %}
-                        <tr>
-                            <td>
-                                <a href="/tweets/?i={{ illness }}&t={{ node.type_id }}&n={{ node.name }}&s=2009-01-01&e=9999-12-31">
-                                    {{ node.name }}
-                                </a>
-                            </td>
-                            <td>{{ node.type }}</td>
-                        </tr>
-                    {% endfor %}
                     </tbody>
                 </table>
 
@@ -41,18 +31,6 @@
 
             </div>
             <script type="text/javascript">
-                $(function () {
-                    $('input[name="daterange"]').daterangepicker({
-                        "opens": 'right',
-                        "drops": "up"
-                    }, function (start, end, label) {
-                        $.get("/update/?i={{ illness }}&s=" + start.format('YYYY-MM-DD') + "&e=" + end.format('YYYY-MM-DD'), null, function (data) {
-                            update_diagram(data.data, data.links);
-                            update_tables(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'), data.nodes);
-                        });
-                    });
-                });
-
                 // 基于准备好的dom，初始化echarts实例
                 var myChart = echarts.init(document.getElementById('main'));
                 myChart.showLoading();
@@ -86,42 +64,40 @@
                         force: {
                             repulsion: 100
                         },
-                        data: [
-                            {% for node in data %}
-                                {
-                                    category: {{ node.category }},
-                                    name: "{{ node.name }}",
-                                    symbolSize: {{ node.symbolSize }},
-                                    value: {{ node.value }},
-                                    draggable: {{ node.draggable }},
-                                },
-                            {% endfor %}
-                        ],
-                        links: [
-                            {% for link in links %}
-                                {
-                                    source: "{{ link.source }}",
-                                    target: "{{ link.target }}",
-                                    lineStyle: {
-                                        normal: {
-                                            width: {{ link.lineStyle.normal.width }}
-                                        }
-                                    }
-                                },
-                            {% endfor %}
-                        ]
+                        data: [],
+                        links: []
                     }]
                 };
                 myChart.setOption(option);
-                myChart.hideLoading();
+
+                console.log('{{ start }}');
+                console.log('{{ end }}');
+                $.get("/update/?i={{ illness }}&s={{ start }}&e={{ end }}", null, function (data) {
+                    update_diagram(data.data, data.links);
+                    update_tables('{{ start }}', '{{ end }}', data.nodes);
+                    myChart.hideLoading();
+                });
+
+
+                $(function () {
+                    $('input[name="daterange"]').daterangepicker({
+                        "opens": 'right',
+                        "drops": "up"
+                    }, function (start, end, label) {
+                        myChart.showLoading();
+                        $.get("/update/?i={{ illness }}&s=" + start.format('YYYY-MM-DD') + "&e=" + end.format('YYYY-MM-DD'), null, function (data) {
+                            update_diagram(data.data, data.links);
+                            update_tables(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'), data.nodes);
+                            myChart.hideLoading();
+                        });
+                    });
+                });
 
                 function update_diagram(data, links) {
-                    myChart.showLoading();
                     var option = myChart.getOption();
                     option.series[0].data = data;
                     option.series[0].links = links;
                     myChart.setOption(option);
-                    myChart.hideLoading();
                 }
 
                 function update_tables(start, end, nodes) {

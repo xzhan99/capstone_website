@@ -163,30 +163,60 @@ class MongoHandler(object):
         return nodes, relations
 
     def get_tweets(self, ill, t_type, name, start='2009-01-01', end='2019-12-31'):
-        if t_type == 'Symptom':
-            tweets = self.collection.find(
-                {
+        if ill != 'all':
+            ill = ill.replace('_', ' ')
+            if t_type == 'Symptom':
+                print({
                     'illness': ill,
                     'post_date': {'$gte': start, '$lte': end},
                     'symptoms': name
-                },
-                {
-                    'post_date': 1,
-                    'tweet_info.full_text': 1
                 })
-            return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
+                tweets = self.collection.find(
+                    {
+                        'illness': ill,
+                        'post_date': {'$gte': start, '$lte': end},
+                        'symptoms': name
+                    },
+                    {
+                        'post_date': 1,
+                        'tweet_info.full_text': 1
+                    })
+                return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
+            else:
+                tweets = self.collection.find(
+                    {
+                        'illness': ill,
+                        'post_date': {'$gte': start, '$lte': end},
+                        'treatments': name
+                    },
+                    {
+                        'post_date': 1,
+                        'tweet_info.full_text': 1
+                    })
+                return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
         else:
-            tweets = self.collection.find(
-                {
-                    'illness': ill,
-                    'post_date': {'$gte': start, '$lte': end},
-                    'treatments': name
-                },
-                {
-                    'post_date': 1,
-                    'tweet_info.full_text': 1
-                })
-            return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
+            if t_type == 'Symptom':
+                tweets = self.collection.find(
+                    {
+                        'post_date': {'$gte': start, '$lte': end},
+                        'symptoms': name
+                    },
+                    {
+                        'post_date': 1,
+                        'tweet_info.full_text': 1
+                    })
+                return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
+            else:
+                tweets = self.collection.find(
+                    {
+                        'post_date': {'$gte': start, '$lte': end},
+                        'treatments': name
+                    },
+                    {
+                        'post_date': 1,
+                        'tweet_info.full_text': 1
+                    })
+                return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
 
 
 def close(self):
@@ -202,17 +232,17 @@ def index(request):
 
 def illness(request):
     ill = request.GET.get('i', 'all')
-
-    data, links = mongo.get_nodes_and_relations(ill)
-    nodes = [{'name': i['name'], 'type_id': i['category'], 'type': CATEGORY_TO_NAME[i['category']]}
-             for i in data if i['category'] != 0]
-
+    # data, links = mongo.get_nodes_and_relations(ill)
+    # nodes = [{'name': i['name'], 'type_id': i['category'], 'type': CATEGORY_TO_NAME[i['category']]}
+    #          for i in data if i['category'] != 0]
     return render(request, 'illness.html',
                   context={
                       'illness': ill,
-                      'data': data,
-                      'links': links,
-                      'nodes': nodes
+                      # 'data': [],
+                      # 'links': [],
+                      # 'nodes': [],
+                      'start': '2009-01-01',
+                      'end': '2019-12-31'
                   })
 
 

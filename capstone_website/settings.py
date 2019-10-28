@@ -82,8 +82,8 @@ DATABASES = {
 MONGODB = {
     'host': '35.189.49.184',
     'port': 27017,
-    'username': 'root',
-    'password': '1233211234',
+    'username': '',
+    'password': '',
     'db': 'capstone',
     'col': 'tweets_en_v2'
 }
