@@ -54,7 +54,6 @@ def list_tweets(request):
     end_date = request.GET.get('e')
 
     tweets = mongo.get_tweets(ill, CATEGORY_TO_NAME[int(tweet_type)], name, start_date, end_date)
-    print(tweets)
 
     return render(request, 'tweet_list.html',
                   context={
@@ -65,3 +64,13 @@ def list_tweets(request):
                       'name': name,
                       'list': tweets
                   })
+
+
+def manual(request):
+    return render(request, 'manual.html')
+
+
+def get_manual_tweets(request):
+    start = int(request.GET.get('s', 0))
+    tweets = mongo.get_manual_tweets(start)
+    return JsonResponse({'tweets': tweets, 'start': start, 'count': len(tweets)})

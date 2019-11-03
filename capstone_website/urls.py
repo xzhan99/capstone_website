@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from health.views import index, illness, update_diagram, list_tweets
+from health.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +24,6 @@ urlpatterns = [
     path('illness/', illness),
     path('update/', update_diagram),
     path('tweets/', list_tweets),
+    path('cfg/manual/', manual),
+    path('cfg/get_manual/', get_manual_tweets)
 ]

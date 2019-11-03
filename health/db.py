@@ -202,5 +202,10 @@ class MongoHandler(object):
                     })
                 return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
 
+    def get_manual_tweets(self, start):
+        cursor = self._collection.find({'manual': True},
+                                       {'_id': 0, 'tweet_info.full_text': 1, 'tags': 1}).skip(start).limit(50)
+        return [{'text': t['tweet_info']['full_text'], 'tags': t['tags']} for t in cursor]
+
     def close(self):
         self._client.close()

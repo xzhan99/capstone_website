@@ -1,0 +1,72 @@
+{% extends 'left_bar.html' %}
+{% block contents %}
+    <section class="resume-section p-3 p-lg-5 d-flex align-items-baseline" id="about">
+        <div class="w-100">
+            <div style="margin-top: 10px">
+                <table id="s_table" class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Text</th>
+                        <th>Label</th>
+                    </tr>
+                    </thead>
+                    <tbody id="table_area"></tbody>
+                </table>
+                <script type="text/javascript">
+                    var hasNext = true;
+                    var isLoading = false;
+                    var cs = 0;
+
+                    $(document).ready(function () {
+                        next_page();
+
+                        $(window).scroll(function () {
+                            if (scrollTop() + windowHeight() >= (documentHeight() - 10) && !isLoading && hasNext) {   //距离顶部+当前高度 >=文档总高度 即代表滑动到底部 count++;         //每次滑动count加1
+                                isLoading = true;
+                                next_page();
+                            }
+                        });
+                    });
+
+                    function scrollTop() {
+                        return Math.max(
+                            //chrome
+                            document.body.scrollTop,
+                            //firefox/IE
+                            document.documentElement.scrollTop);
+                    }
+
+                    function documentHeight() {
+                        return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+                    }
+
+                    function windowHeight() {
+                        return (document.compatMode == "CSS1Compat") ?
+                            document.documentElement.clientHeight :
+                            document.body.clientHeight;
+                    }
+
+                    function next_page() {
+                        $.get('/cfg/get_manual/?s=' + cs.toString(), null, function (data) {
+                            if (cs > data.start) {
+                                return;
+                            }
+                            cs = data.start + data.count;
+                            if (data.count == 0) {
+                                hasNext = false;
+                            }
+
+                            var tbody = $("#table_area");
+                            $.each(data.tweets, function (index, item) {
+                                var s = '<tr><td>' + item.text + '</td><td>' + item.tags + '</td></tr>';
+                                tbody.append(s);
+                            });
+
+                            isLoading = false;
+                        });
+                    }
+                </script>
+            </div>
+        </div>
+    </section>
+{% endblock %}
