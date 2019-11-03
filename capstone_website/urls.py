@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from relationship.views import index, illness, update_diagram, list_tweets
+from health.views import index, illness, update_diagram, list_tweets
 
 urlpatterns = [
     path('admin/', admin.site.urls),
