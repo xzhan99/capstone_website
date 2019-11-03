@@ -5,9 +5,9 @@ from capstone_website.settings import MONGODB
 
 
 class MongoHandler(object):
-    client = None
-    db = None
-    collection = None
+    _client = None
+    _db = None
+    _collection = None
 
     def __init__(self):
         username = urllib.parse.quote_plus(MONGODB['username'])
@@ -16,18 +16,18 @@ class MongoHandler(object):
             url = 'mongodb://%s:%d' % (MONGODB['host'], MONGODB['port'])
         else:
             url = 'mongodb://%s:%s@%s:%d' % (username, password, MONGODB['host'], MONGODB['port'])
-        self.client = pymongo.MongoClient(url)
-        self.db = self.client[MONGODB['db']]
-        self.collection = self.db[MONGODB['col']]
+        self._client = pymongo.MongoClient(url)
+        self._db = self._client[MONGODB['db']]
+        self._collection = self._db[MONGODB['col']]
 
     def count_tweets(self, ill, start, end):
         if ill != 'all':
-            return self.collection.count({'illness': ill, 'post_date': {'$gte': start, '$lte': end}})
+            return self._collection.count({'illness': ill, 'post_date': {'$gte': start, '$lte': end}})
         else:
-            return self.collection.count({'post_date': {'$gte': start, '$lte': end}})
+            return self._collection.count({'post_date': {'$gte': start, '$lte': end}})
 
     def extract_symptoms(self, ill, start, end):
-        return self.collection.aggregate([
+        return self._collection.aggregate([
             {'$match': {'illness': ill, 'post_date': {'$gte': start, '$lte': end}}},
             {'$project': {'symptoms': 1}},
             {'$match': {'symptoms': {'$exists': True, '$ne': []}}},
@@ -36,7 +36,7 @@ class MongoHandler(object):
         ])
 
     def extract_treatments(self, ill, start, end):
-        return self.collection.aggregate([
+        return self._collection.aggregate([
             {'$match': {'illness': ill, 'post_date': {'$gte': start, '$lte': end}}},
             {'$project': {'treatments': 1}},
             {'$match': {'treatments': {'$exists': True, '$ne': []}}},
@@ -45,7 +45,7 @@ class MongoHandler(object):
         ])
 
     def extract_relations(self, ill, start, end):
-        cursor = self.collection.aggregate([
+        cursor = self._collection.aggregate([
             {'$match': {'illness': ill, 'post_date': {'$gte': start, '$lte': end}}},
             {'$project': {'symptoms': 1, 'treatments': 1}},
             {'$match': {'symptoms': {'$exists': True, '$ne': []}, 'treatments': {'$exists': True, '$ne': []}}},
@@ -155,7 +155,7 @@ class MongoHandler(object):
                     'post_date': {'$gte': start, '$lte': end},
                     'symptoms': name
                 })
-                tweets = self.collection.find(
+                tweets = self._collection.find(
                     {
                         'illness': ill,
                         'post_date': {'$gte': start, '$lte': end},
@@ -167,7 +167,7 @@ class MongoHandler(object):
                     })
                 return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
             else:
-                tweets = self.collection.find(
+                tweets = self._collection.find(
                     {
                         'illness': ill,
                         'post_date': {'$gte': start, '$lte': end},
@@ -180,7 +180,7 @@ class MongoHandler(object):
                 return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
         else:
             if t_type == 'Symptom':
-                tweets = self.collection.find(
+                tweets = self._collection.find(
                     {
                         'post_date': {'$gte': start, '$lte': end},
                         'symptoms': name
@@ -191,7 +191,7 @@ class MongoHandler(object):
                     })
                 return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
             else:
-                tweets = self.collection.find(
+                tweets = self._collection.find(
                     {
                         'post_date': {'$gte': start, '$lte': end},
                         'treatments': name
@@ -203,4 +203,4 @@ class MongoHandler(object):
                 return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
 
     def close(self):
-        self.client.close()
+        self._client.close()
