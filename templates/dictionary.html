@@ -1,0 +1,35 @@
+{% extends 'left_bar.html' %}
+{% block contents %}
+    <section class="resume-section p-3 p-lg-5 d-flex align-items-baseline" id="about">
+        <div class="w-100">
+            <div style="margin-top: 10px">
+                <table id="s_table" class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Illness</th>
+                        <th>Symptoms</th>
+                        <th>Treatment</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Pneumonia</td>
+                        <td>{{ pneumonia.symptoms }}</td>
+                        <td>{{ pneumonia.treatment }}</td>
+                    </tr>
+                    <tr>
+                        <td>Diabetes</td>
+                        <td>{{ diabetes.symptoms }}</td>
+                        <td>{{ diabetes.treatment }}</td>
+                    </tr>
+                    <tr>
+                        <td>Common Cold</td>
+                        <td>{{ common_cold.symptoms }}</td>
+                        <td>{{ common_cold.treatment }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}
