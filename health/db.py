@@ -149,11 +149,6 @@ class MongoHandler(object):
         if ill != 'all':
             ill = ill.replace('_', ' ')
             if t_type == 'Symptom':
-                print({
-                    'illness': ill,
-                    'post_date': {'$gte': start, '$lte': end},
-                    'symptoms': name
-                })
                 tweets = self._collection.find(
                     {
                         'illness': ill,
