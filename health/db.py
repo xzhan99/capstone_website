@@ -3,6 +3,8 @@ import urllib
 
 from capstone_website.settings import MONGODB
 
+ILLNESSES = ['pneumonia', 'diabetes', 'common cold']
+
 
 class MongoHandler(object):
     _client = None
@@ -94,7 +96,6 @@ class MongoHandler(object):
             relations.extend(
                 [{'source': t['name'], 'target': ill, 'lineStyle': {'normal': {'width': 1}}} for t in treatments])
         else:
-            ills = ['pneumonia', 'diabetes', 'common cold']
             nodes = [
                 {
                     'category': 0,
@@ -102,11 +103,11 @@ class MongoHandler(object):
                     'symbolSize': 15,
                     'value': self.count_tweets(ill, start, end),
                     'draggable': 'true'
-                } for ill in ills
+                } for ill in ILLNESSES
             ]
             symptoms, treatments = {}, {}
             relations = []
-            for ill in ills:
+            for ill in ILLNESSES:
                 ill_symptoms = list(self.extract_symptoms(ill, start, end))
                 ill_treatments = list(self.extract_treatments(ill, start, end))
                 for s in ill_symptoms:
@@ -144,6 +145,42 @@ class MongoHandler(object):
             nodes.extend(treatments)
 
         return nodes, relations
+
+    def get_summary_counts(self, ill, start, end):
+        if ill == 'all':
+            return {
+                'total': self._collection.count({'illness': {'$in': ILLNESSES},
+                                                 'post_date': {'$gte': start, '$lte': end}}),
+                'relevant': self._collection.count({'illness': {'$in': ILLNESSES},
+                                                    'related': True,
+                                                    'post_date': {'$gte': start, '$lte': end}}),
+                'illness': self._collection.count({'illness': {'$in': ILLNESSES},
+                                                   'tags': 'illness',
+                                                   'post_date': {'$gte': start, '$lte': end}}),
+                'symptoms': self._collection.count({'illness': {'$in': ILLNESSES},
+                                                    'tags': 'symptoms',
+                                                    'post_date': {'$gte': start, '$lte': end}}),
+                'treatment': self._collection.count({'illness': {'$in': ILLNESSES},
+                                                     'tags': 'treatment',
+                                                     'post_date': {'$gte': start, '$lte': end}}),
+            }
+        else:
+            ill = ill.replace('_', ' ')
+            return {
+                'total': self._collection.count({'illness': ill, 'post_date': {'$gte': start, '$lte': end}}),
+                'relevant': self._collection.count({'illness': ill,
+                                                    'related': True,
+                                                    'post_date': {'$gte': start, '$lte': end}}),
+                'illness': self._collection.count({'illness': ill,
+                                                   'tags': 'illness',
+                                                   'post_date': {'$gte': start, '$lte': end}}),
+                'symptoms': self._collection.count({'illness': ill,
+                                                    'tags': 'symptoms',
+                                                    'post_date': {'$gte': start, '$lte': end}}),
+                'treatment': self._collection.count({'illness': ill,
+                                                     'tags': 'treatment',
+                                                     'post_date': {'$gte': start, '$lte': end}}),
+            }
 
     def get_tweets(self, ill, t_type, name, start='2009-01-01', end='2019-12-31'):
         if ill != 'all':

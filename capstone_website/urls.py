@@ -23,6 +23,7 @@ urlpatterns = [
     path('index/', index),
     path('illness/', illness),
     path('update/', update_diagram),
+    path('summary/', get_summary),
     path('tweets/', list_tweets),
     path('cfg/tweets/', labelled_tweets),
     path('cfg/get_cfg_tweets/', get_labelled_tweets),

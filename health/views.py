@@ -43,6 +43,13 @@ def update_diagram(request):
     return JsonResponse({'data': data, 'links': links, 'nodes': nodes})
 
 
+def get_summary(request):
+    ill = request.GET.get('i', 'all')
+    start_date = request.GET.get('s', '2009-01-01')
+    end_date = request.GET.get('e', '2019-12-31')
+    return JsonResponse(mongo.get_summary_counts(ill, start_date, end_date))
+
+
 def list_tweets(request):
     ill = request.GET.get('i')
     tweet_type = request.GET.get('t')

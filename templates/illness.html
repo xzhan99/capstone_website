@@ -2,7 +2,6 @@
 {% block contents %}
     <section class="resume-section p-3 p-lg-5 d-flex align-items-center" id="about">
         <div class="w-100">
-            <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
             <div id="main" style="width:100%; height:650px;"></div>
             <div>
                 <form class="form-inline" role="form">
@@ -15,6 +14,19 @@
                 </form>
             </div>
             <div style="margin-top: 10px">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Total</th>
+                        <th>Relevant</th>
+                        <th>Illness</th>
+                        <th>Symptoms</th>
+                        <th>Treatment</th>
+                    </tr>
+                    </thead>
+                    <tbody id="summary">
+                    </tbody>
+                </table>
                 <table id="s_table" class="table table-striped">
                     <thead>
                     <tr>
@@ -25,13 +37,8 @@
                     <tbody>
                     </tbody>
                 </table>
-
-            </div>
-            <div>
-
             </div>
             <script type="text/javascript">
-                // 基于准备好的dom，初始化echarts实例
                 var myChart = echarts.init(document.getElementById('main'));
                 myChart.showLoading();
                 var categories = [{name: 'Illness'}, {name: 'Symptom'}, {name: 'Treatment'}];
@@ -70,12 +77,18 @@
                 };
                 myChart.setOption(option);
 
-                console.log('{{ start }}');
-                console.log('{{ end }}');
                 $.get("/update/?i={{ illness }}&s={{ start }}&e={{ end }}", null, function (data) {
                     update_diagram(data.data, data.links);
                     update_tables('{{ start }}', '{{ end }}', data.nodes);
                     myChart.hideLoading();
+                });
+                $.get("/summary/?i={{ illness }}&s={{ start }}&e={{ end }}", null, function (data) {
+                    var summary_content = $("#summary");
+                    summary_content.empty();
+                    for (var key in data) {
+                        var value = data[key];
+                        summary_content.append('<td>' + value.toString() + '</td>');
+                    }
                 });
 
 
@@ -85,6 +98,14 @@
                         "drops": "up"
                     }, function (start, end, label) {
                         myChart.showLoading();
+                        $.get("/summary/?i={{ illness }}&s=" + start.format('YYYY-MM-DD') + "&e=" + end.format('YYYY-MM-DD'), null, function (data) {
+                            var summary_content = $("#summary");
+                            summary_content.empty();
+                            for (var key in data) {
+                                var value = data[key];
+                                summary_content.append('<td>' + value.toString() + '</td>');
+                            }
+                        });
                         $.get("/update/?i={{ illness }}&s=" + start.format('YYYY-MM-DD') + "&e=" + end.format('YYYY-MM-DD'), null, function (data) {
                             update_diagram(data.data, data.links);
                             update_tables(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'), data.nodes);
