@@ -63,13 +63,14 @@ def list_tweets(request):
                   })
 
 
-def manual(request):
-    return render(request, 'manual.html')
+def labelled_tweets(request):
+    return render(request, 'cfg_tweets.html', context={'type': request.GET.get('t', 'manual')})
 
 
-def get_manual_tweets(request):
+def get_labelled_tweets(request):
+    label_type = request.GET.get('t', 'manual')
     start = int(request.GET.get('s', 0))
-    tweets = mongo.get_manual_tweets(start)
+    tweets = mongo.get_cfg_tweets(label_type, start)
     return JsonResponse({'tweets': tweets, 'start': start, 'count': len(tweets)})
 
 

@@ -21,7 +21,7 @@
                         next_page();
 
                         $(window).scroll(function () {
-                            if (scrollTop() + windowHeight() >= (documentHeight() - 10) && !isLoading && hasNext) {   //距离顶部+当前高度 >=文档总高度 即代表滑动到底部 count++;         //每次滑动count加1
+                            if (scrollTop() + windowHeight() >= (documentHeight() - 10) && !isLoading && hasNext) {
                                 isLoading = true;
                                 next_page();
                             }
@@ -47,7 +47,7 @@
                     }
 
                     function next_page() {
-                        $.get('/cfg/get_manual/?s=' + cs.toString(), null, function (data) {
+                        $.get('/cfg/get_cfg_tweets/?t={{ type }}&s=' + cs.toString(), null, function (data) {
                             if (cs > data.start) {
                                 return;
                             }
@@ -58,10 +58,8 @@
 
                             var tbody = $("#table_area");
                             $.each(data.tweets, function (index, item) {
-                                var s = '<tr><td>' + item.text + '</td><td>' + item.tags + '</td></tr>';
-                                tbody.append(s);
+                                tbody.append('<tr><td>' + item.text + '</td><td>' + item.tags + '</td></tr>');
                             });
-
                             isLoading = false;
                         });
                     }

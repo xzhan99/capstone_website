@@ -24,7 +24,7 @@ urlpatterns = [
     path('illness/', illness),
     path('update/', update_diagram),
     path('tweets/', list_tweets),
-    path('cfg/manual/', manual),
-    path('cfg/get_manual/', get_manual_tweets),
+    path('cfg/tweets/', labelled_tweets),
+    path('cfg/get_cfg_tweets/', get_labelled_tweets),
     path('cfg/dictionary/', dictionary),
 ]

@@ -196,9 +196,15 @@ class MongoHandler(object):
                     })
                 return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
 
-    def get_manual_tweets(self, start):
-        cursor = self._collection.find({'manual': True},
-                                       {'_id': 0, 'tweet_info.full_text': 1, 'tags': 1}).skip(start).limit(50)
+    def get_cfg_tweets(self, label_type, start):
+        if label_type == 'manual':
+            cursor = self._collection.find({'manual': True, 'tags': {'$exists': True}},
+                                           {'_id': 0, 'tweet_info.full_text': 1, 'tags': 1}).skip(start).limit(50)
+        else:
+            cursor = self._collection.find({'$or': [{'manual': {'$exists': False}}, {'manual': False}],
+                                            'tags': {'$exists': True}},
+                                           {'_id': 0, 'tweet_info.full_text': 1, 'tags': 1}).skip(start).limit(50)
+        cursor = [t for t in cursor]
         return [{'text': t['tweet_info']['full_text'], 'tags': t['tags']} for t in cursor]
 
     def close(self):
