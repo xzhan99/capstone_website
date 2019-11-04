@@ -1,8 +1,3 @@
-from django.http import JsonResponse
-from django.shortcuts import render
-
-from health import mongo
-
 ID_TO_TOPIC = {
     0: 'Others',
     1: 'Symptom',

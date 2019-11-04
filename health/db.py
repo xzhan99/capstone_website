@@ -94,8 +94,7 @@ class MongoHandler(object):
             relations.extend(
                 [{'source': t['name'], 'target': ill, 'lineStyle': {'normal': {'width': 1}}} for t in treatments])
         else:
-            ills = ['pneumonia', 'diabetes', 'common cold', 'cancer']
-            # ills = ['pneumonia']
+            ills = ['pneumonia', 'diabetes', 'common cold']
             nodes = [
                 {
                     'category': 0,
