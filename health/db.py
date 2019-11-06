@@ -194,9 +194,8 @@ class MongoHandler(object):
                     },
                     {
                         'post_date': 1,
-                        'tweet_info.full_text': 1
+                        'tweet_info.full_text': 1,
                     })
-                return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
             else:
                 tweets = self._collection.find(
                     {
@@ -206,9 +205,8 @@ class MongoHandler(object):
                     },
                     {
                         'post_date': 1,
-                        'tweet_info.full_text': 1
+                        'tweet_info.full_text': 1,
                     })
-                return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
         else:
             if t_type == 'Symptom':
                 tweets = self._collection.find(
@@ -218,9 +216,8 @@ class MongoHandler(object):
                     },
                     {
                         'post_date': 1,
-                        'tweet_info.full_text': 1
+                        'tweet_info.full_text': 1,
                     })
-                return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
             else:
                 tweets = self._collection.find(
                     {
@@ -229,9 +226,9 @@ class MongoHandler(object):
                     },
                     {
                         'post_date': 1,
-                        'tweet_info.full_text': 1
+                        'tweet_info.full_text': 1,
                     })
-                return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
+        return [{'text': t['tweet_info']['full_text'], 'time': t['post_date']} for t in tweets]
 
     def get_cfg_tweets(self, label_type, start):
         if label_type == 'manual':

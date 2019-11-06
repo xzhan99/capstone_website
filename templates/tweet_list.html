@@ -30,7 +30,7 @@
                     {% for t in list %}
                         <tr>
                             <td>{{ t.time }}</td>
-                            <td>{{ t.text }}</td>
+                            <td>{{ t.text|safe }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

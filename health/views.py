@@ -1,3 +1,5 @@
+import re
+
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -15,6 +17,9 @@ CATEGORY_TO_NAME = {
     1: 'Symptom',
     2: 'Treatment'
 }
+
+URL_PATTERN = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+A_TAG_LINK = '<a href="%s" target="_blank">%s</a>'
 
 
 def index(request):
@@ -58,6 +63,10 @@ def list_tweets(request):
     end_date = request.GET.get('e')
 
     tweets = mongo.get_tweets(ill, CATEGORY_TO_NAME[int(tweet_type)], name, start_date, end_date)
+    # add a tag fpr external link
+    for t in tweets:
+        for url in re.findall(URL_PATTERN, t['text']):
+            t['text'] = t['text'].replace(url, A_TAG_LINK % (url, url))
 
     return render(request, 'tweet_list.html',
                   context={
@@ -78,6 +87,10 @@ def get_labelled_tweets(request):
     label_type = request.GET.get('t', 'manual')
     start = int(request.GET.get('s', 0))
     tweets = mongo.get_cfg_tweets(label_type, start)
+    # add a tag fpr external link
+    for t in tweets:
+        for url in re.findall(URL_PATTERN, t['text']):
+            t['text'] = t['text'].replace(url, A_TAG_LINK % (url, url))
     return JsonResponse({'tweets': tweets, 'start': start, 'count': len(tweets)})
 
 
